@@ -1,0 +1,15 @@
+{
+  "name": "broker-tour-router",
+  "version": "2.0.0",
+  "private": true,
+  "description": "JVM Lending Broker Tour Router: plans broker tour routes from the tour sheet, with labeled Apple Maps pins and employee-only sign-in.",
+  "type": "module",
+  "engines": { "node": ">=20" },
+  "scripts": {
+    "add-user": "node scripts/add-user.mjs"
+  },
+  "dependencies": {
+    "@vercel/functions": "^3.10.0"
+  },
+  "license": "UNLICENSED"
+}
