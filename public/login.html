@@ -2,59 +2,83 @@
 <html lang="en">
 <head>
 <meta charset="utf-8">
-<meta name="viewport" content="width=device-width,initial-scale=1">
-<title>Sign in · Broker Tour Router</title>
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
 <meta name="robots" content="noindex,nofollow">
-<link rel="icon" href="/favicon.svg" type="image/svg+xml">
+<title>Sign in · Broker Tour Router</title>
+<link rel="icon" href="jvm-icon.svg" type="image/svg+xml">
 <link rel="preconnect" href="https://fonts.googleapis.com">
-<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Montserrat:wght@500;700;800&family=Open+Sans:wght@400;600&display=swap">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Montserrat:wght@500;700;800&family=Open+Sans:wght@400;600;700&display=swap">
 <style>
-:root{--teal:#2D8692;--teal2:#26A1B3;--orange:#F7AD50;--cyan:#D5F4F6;--ink:#323232;--muted:#5c6a6d;--line:#d3e3e6;--bg:#f3f8f9;--surface:#fff;--bad:#b4332b}
-@media (prefers-color-scheme:dark){:root{--ink:#e6f1f2;--muted:#9ab0b3;--line:#26403f;--bg:#0d191b;--surface:#142427;--bad:#ef7b72;--cyan:#123a40}}
+/* JVM Lending sign-in: teal field with the orange corner mark, one white card. */
+:root{
+  --brand:#2D8692; --brand-deep:#226a74; --orange:#F7AD50; --cyan:#D5F4F6;
+  --ink:#323232; --muted:#5f6b6d; --line:#d3dfe0; --surface:#ffffff; --bad:#b4332b;
+  --display:"Montserrat","Helvetica Neue",Arial,sans-serif; --body:"Open Sans","Helvetica Neue",Arial,sans-serif;
+}
+@media (prefers-color-scheme:dark){:root{--brand:#1d5c64;--brand-deep:#123c42;--ink:#e6eeef;--muted:#a3b3b5;--line:#33484b;--surface:#162226;--bad:#ef7b72;color-scheme:dark}}
 *{box-sizing:border-box}
-html,body{margin:0;min-height:100%}
-body{background:var(--bg);color:var(--ink);font:15px/1.5 "Open Sans",system-ui,sans-serif;display:flex;flex-direction:column;min-height:100vh}
-.bar{background:var(--teal);border-bottom:4px solid var(--orange);color:#fff;padding:12px 16px}
-.logo{display:inline-flex;align-items:center;gap:8px}
-.logo img{height:30px;display:block}
-.sq{width:22px;height:22px;background:var(--orange);border-radius:3px 3px 3px 11px}
-.wm{font:800 19px/1 Montserrat,sans-serif;letter-spacing:-.02em}.wm b{font-weight:500}
-main{flex:1;display:grid;place-items:center;padding:24px 16px}
-.card{width:min(400px,100%);background:var(--surface);border:1px solid var(--line);border-left:5px solid var(--orange);border-radius:12px;padding:24px}
-h1{font:800 22px/1.2 Montserrat,sans-serif;margin:0 0 4px}
-p.sub{margin:0 0 20px;color:var(--muted);font-size:14px}
-label{display:block;font:600 13px Montserrat,sans-serif;margin:14px 0 6px}
-input{width:100%;font:inherit;color:var(--ink);background:var(--bg);border:1px solid var(--line);border-radius:8px;padding:10px 12px}
-input:focus-visible,button:focus-visible{outline:2px solid var(--teal2);outline-offset:2px}
-button{margin-top:20px;width:100%;font:700 15px Montserrat,sans-serif;background:var(--teal);color:#fff;border:0;border-radius:8px;padding:12px;cursor:pointer}
-button:hover{background:#246f79}button:disabled{opacity:.6;cursor:default}
-.err{color:var(--bad);font-size:13px;min-height:1.3em;margin-top:12px}
-footer{text-align:center;color:var(--muted);font-size:12px;padding:16px}
+html,body{height:100%}
+body{margin:0;background:var(--brand);color:var(--ink);font-family:var(--body);font-size:15px;line-height:1.5;display:flex;flex-direction:column;
+  background-image:linear-gradient(160deg,var(--brand) 0%,var(--brand-deep) 100%)}
+main{flex:1;display:grid;place-items:center;padding-block:32px;padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px))}
+.card{width:min(420px,100%);background:var(--surface);border-radius:14px;padding:28px 26px 24px;box-shadow:0 18px 50px rgba(0,0,0,.22);border-top:5px solid var(--orange);display:flex;flex-direction:column;gap:18px}
+.logo{height:32px;width:auto;display:block}
+.logo-img{height:38px;width:auto;display:block}
+h1{font-family:var(--display);font-weight:800;font-size:22px;margin:0;letter-spacing:-.01em}
+.sub{margin:4px 0 0;color:var(--muted);font-size:14px}
+form{display:flex;flex-direction:column;gap:14px}
+label{display:flex;flex-direction:column;gap:6px;font-family:var(--display);font-weight:700;font-size:12px;letter-spacing:.06em;text-transform:uppercase;color:var(--muted)}
+input{font:400 16px var(--body);text-transform:none;letter-spacing:0;color:var(--ink);background:transparent;border:1px solid var(--line);border-radius:8px;padding:11px 12px;width:100%}
+input:focus-visible,button:focus-visible{outline:2px solid var(--brand);outline-offset:2px}
+.pw{position:relative}
+.pw input{padding-right:64px}
+.show{position:absolute;right:6px;top:50%;transform:translateY(-50%);font:600 12px var(--body);background:none;border:0;color:var(--brand);cursor:pointer;padding:6px 8px;text-transform:none;letter-spacing:0}
+@media (prefers-color-scheme:dark){.show{color:#7fd0db}}
+.go{font-family:var(--display);font-weight:700;font-size:15px;background:var(--orange);color:#2a1d05;border:0;border-radius:8px;padding:12px;cursor:pointer}
+.go:hover{filter:brightness(.96)}
+.go:disabled{opacity:.6;cursor:default}
+.err{color:var(--bad);font-size:14px;min-height:1.2em;margin:0}
+.foot{font-size:12px;color:var(--muted);margin:0}
+footer{text-align:center;color:rgba(255,255,255,.75);font-size:12px;padding:0 16px 20px}
 </style>
 </head>
 <body>
-<div class="bar"><span class="logo"><img src="/jvm-logo.png" alt="JVM Lending" hidden onload="this.hidden=false;this.nextElementSibling.hidden=true;this.nextElementSibling.nextElementSibling.hidden=true" onerror="this.remove()"><span class="sq" aria-hidden="true"></span><span class="wm">jvm<b>lending</b></span></span></div>
 <main>
-  <form class="card" id="f" novalidate>
-    <h1>Broker Tour Router</h1>
-    <p class="sub">For JVM Lending employees. Sign in with your work email.</p>
-    <label for="email">Work email</label>
-    <input id="email" type="email" autocomplete="username" placeholder="name@jvmlending.com" required>
-    <label for="password">Password</label>
-    <input id="password" type="password" autocomplete="current-password" required>
-    <button id="go" type="submit">Sign in</button>
-    <div class="err" id="err" role="alert"></div>
-  </form>
+  <div class="card">
+    <div>
+      <img class="logo-img" id="logoImg" src="jvm-logo.png" alt="JVM Lending" hidden onload="this.hidden=false;document.getElementById('logoSvg').remove()" onerror="this.remove()">
+      <svg class="logo" id="logoSvg" viewBox="0 0 168 32" role="img" aria-label="JVM Lending">
+        <path d="M0 0H20A8 8 0 0 1 28 8V28H0Z" fill="#F7AD50" transform="translate(0 2)"/>
+        <text x="38" y="24" font-family="Montserrat,Arial,sans-serif" font-size="22" fill="currentColor"><tspan font-weight="800">jvm</tspan><tspan font-weight="500">lending</tspan></text>
+      </svg>
+    </div>
+    <div>
+      <h1>Broker Tour Router</h1>
+      <p class="sub">Sign in with your JVM Lending email.</p>
+    </div>
+    <form id="f" novalidate>
+      <label for="email">Work email
+        <input id="email" name="email" type="email" autocomplete="username" inputmode="email" placeholder="name@jvmlending.com" required>
+      </label>
+      <label for="password">Password
+        <span class="pw"><input id="password" name="password" type="password" autocomplete="current-password" required><button type="button" class="show" id="show" aria-controls="password">Show</button></span>
+      </label>
+      <p class="err" id="err" role="alert"></p>
+      <button class="go" id="go" type="submit">Sign in</button>
+    </form>
+    <p class="foot">For JVM Lending employees only. Need access or a password reset? Ask your team's admin.</p>
+  </div>
 </main>
-<footer>Need access? Ask Aaron to add you.</footer>
+<footer>JVM Lending · Internal use</footer>
 <script>
 (function(){
   const $=id=>document.getElementById(id);
-  function nextPath(){const n=new URLSearchParams(location.search).get("next")||"/";return /^\/(?!\/)/.test(n)?n:"/"}
+  $("show").onclick=()=>{const p=$("password");const on=p.type==="password";p.type=on?"text":"password";$("show").textContent=on?"Hide":"Show"};
+  function nextPath(){const n=new URLSearchParams(location.search).get("next")||"/";return /^\/(?!\/)/.test(n)&&!/^\/(login|api\/)/.test(n)?n:"/"}
   $("f").addEventListener("submit",async e=>{
     e.preventDefault();$("err").textContent="";
     const email=$("email").value.trim(),password=$("password").value;
-    if(!email){$("err").textContent="Enter your work email.";$("email").focus();return}
+    if(!/@jvmlending\.com$/i.test(email)){$("err").textContent="Use your JVM Lending email address.";$("email").focus();return}
     if(!password){$("err").textContent="Enter your password.";$("password").focus();return}
     $("go").disabled=true;$("go").textContent="Signing in…";
     try{

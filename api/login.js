@@ -1,34 +1,32 @@
-import { allowedDomain, users, checkPassword, makeSession, sessionCookie, send, SESSION_HOURS } from "./_auth.js";
+// POST { email, password } → sets the session cookie for JVM Lending employees.
+import { authConfigured, allowedEmail, checkPassword, makeSessionCookie } from "./_auth.js";
 
-// Best-effort lockout: 5 wrong tries pauses that email for 15 minutes (per server instance).
-const fails = new Map();
-const MAX_TRIES = 5, LOCK_MS = 15 * 60e3;
+// Slow down password guessing: 5 misses per email/IP per 15 minutes (per server instance).
+const misses = new Map();
+const WINDOW = 15 * 60e3, LIMIT = 5;
+function tooMany(key) {
+  const now = Date.now(), list = (misses.get(key) || []).filter(t => now - t < WINDOW);
+  misses.set(key, list);
+  return list.length >= LIMIT;
+}
+function miss(key) { (misses.get(key) || misses.set(key, []).get(key)).push(Date.now()); }
+const sleep = ms => new Promise(r => setTimeout(r, ms));
 
 export default async function handler(req, res) {
-  if (req.method !== "POST") return send(res, 405, { error: "Use POST." });
-  if ((process.env.SESSION_SECRET || "").length < 32) return send(res, 500, { error: "Sign-in isn't set up yet: add SESSION_SECRET in Vercel and redeploy." });
-  if (!users().size) return send(res, 500, { error: "No employees are set up yet: add JVM_USERS in Vercel and redeploy." });
-
-  const body = typeof req.body === "string" ? safeJSON(req.body) : (req.body || {});
-  const email = String(body.email || "").trim().toLowerCase();
-  const password = String(body.password || "");
-  if (!email || !password) return send(res, 400, { error: "Enter your email and password." });
-  if (!email.endsWith("@" + allowedDomain())) return send(res, 403, { error: `Use your @${allowedDomain()} email.` });
-
-  const now = Date.now();
-  let f = fails.get(email);
-  if (f && f.until && f.until <= now) { fails.delete(email); f = null; }   // lockout over: start fresh
-  if (f && f.until > now) return send(res, 429, { error: "Too many tries. Wait 15 minutes, then try again." });
-
-  const ok = checkPassword(password, users().get(email));
-  if (!ok) {
-    const n = (f ? f.n : 0) + 1;
-    fails.set(email, { n, until: n >= MAX_TRIES ? now + LOCK_MS : 0 });
-    return send(res, 401, { error: "That email and password don't match." });
+  if (req.method !== "POST") return res.status(405).json({ error: "Use POST" });
+  if (!authConfigured()) return res.status(503).json({ error: "Sign-in isn't set up yet. An admin needs to add SESSION_SECRET and JVM_USERS in Vercel." });
+  const email = String((req.body && req.body.email) || "").trim().toLowerCase();
+  const password = String((req.body && req.body.password) || "");
+  const ip = String(req.headers["x-forwarded-for"] || "").split(",")[0].trim() || "unknown";
+  const keys = ["e:" + email, "ip:" + ip];
+  if (keys.some(tooMany)) return res.status(429).json({ error: "Too many attempts. Wait 15 minutes and try again." });
+  if (!allowedEmail(email)) { await sleep(400); return res.status(401).json({ error: "Use your JVM Lending email address." }); }
+  if (!password || !checkPassword(email, password)) {
+    keys.forEach(miss); await sleep(400);
+    return res.status(401).json({ error: "That email and password don't match. Check them and try again." });
   }
-  fails.delete(email);
-  res.setHeader("Set-Cookie", sessionCookie(makeSession(email), SESSION_HOURS * 3600));
-  return send(res, 200, { ok: true });
+  keys.forEach(k => misses.delete(k));
+  res.setHeader("Set-Cookie", makeSessionCookie(email));
+  res.setHeader("Cache-Control", "no-store");
+  return res.status(200).json({ ok: true });
 }
-
-function safeJSON(s) { try { return JSON.parse(s); } catch { return {}; } }
